@@ -13,20 +13,20 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 
-public class ChunkAgeData extends SavedData {
+public class ChunkData extends SavedData {
 	private static final String NAME = "chunk_regen_data";
 	private final Map<String, Map<Long, Long>> ageMap = new HashMap<>(); // Key: dimensionID, Value: Map<chunkPackedPos, lastGeneratedDay>
 	
-	public ChunkAgeData() {
-		
+	public ChunkData() {
 	}
 	
-	public static ChunkAgeData create() {
-	    return new ChunkAgeData();
+	public static ChunkData create() {
+	    return new ChunkData();
 	}
 
-	public ChunkAgeData(CompoundTag tag) {
+	public ChunkData(CompoundTag tag) {
 		ListTag list = tag.getList("chunks", Tag.TAG_COMPOUND);
 		for (Tag t : list) {
 		    CompoundTag chunkTag = (CompoundTag) t;
@@ -39,13 +39,13 @@ public class ChunkAgeData extends SavedData {
 		}
 	}
 	
-	public static ChunkAgeData load(CompoundTag tag, Provider lookupProvider) {
-		return new ChunkAgeData(tag);
+	public static ChunkData load(CompoundTag tag, Provider lookupProvider) {
+		return new ChunkData(tag);
 	}
 
-	public static ChunkAgeData get(ServerLevel level) {
+	public static ChunkData get(ServerLevel level) {
 		return level.getDataStorage().computeIfAbsent(
-			    new SavedData.Factory<ChunkAgeData>(ChunkAgeData::create, ChunkAgeData::load),NAME);
+			    new SavedData.Factory<ChunkData>(ChunkData::create, ChunkData::load), NAME);
 	}
 	
 	@Override

@@ -30,11 +30,11 @@ public class ChunkSerializerMixin {
     private static void onReadStart(ServerLevel level, PoiManager poiManager, RegionStorageInfo regionStorageInfo, ChunkPos pos, CompoundTag tag, CallbackInfoReturnable<ProtoChunk> cir) {
     	net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new ChunkEvent.StartLoad(level, poiManager, regionStorageInfo, pos, tag));
     	
-    	ChunkLibrary.LOGGER.debug(ChunkRegenerator.regenList.size() + " chunks are pending regeneration.");
+//    	ChunkLibrary.LOGGER.debug(ChunkRegenerator.regenList.size() + " chunks are pending regeneration.");
     	
     	Pair<String, Long> pair = Pair.of(LevelHelper.getDimensionID(level), ChunkPos.asLong(pos.x, pos.z));
     	if (ChunkRegenerator.regenList.contains(pair)) {
-    		ChunkRegenerator.regenList.remove(pair);
+//    		ChunkRegenerator.regenList.remove(pair);
     		
     		ProtoChunk dummy = new ProtoChunk(
 		            pos,
@@ -50,12 +50,18 @@ public class ChunkSerializerMixin {
 			
 			cir.setReturnValue(dummy);
 			
-			ChunkLibrary.LOGGER.debug("Chunk at " + pos.toString() + " in " + LevelHelper.getDimensionID(level) + " regenerated.");
+//			ChunkLibrary.LOGGER.debug("Chunk at " + pos.toString() + " in " + LevelHelper.getDimensionID(level) + " regenerated.");
     	}
     }
     
     @Inject(method = "read", at = @At("TAIL"), cancellable = true)
     private static void onReadEnd(ServerLevel level, PoiManager poiManager, RegionStorageInfo regionStorageInfo, ChunkPos pos, CompoundTag tag, CallbackInfoReturnable<ProtoChunk> cir) {
     	net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new ChunkEvent.EndLoad(level, poiManager, regionStorageInfo, pos, tag));
+    	
+    	Pair<String, Long> pair = Pair.of(LevelHelper.getDimensionID(level), ChunkPos.asLong(pos.x, pos.z));
+    	if (ChunkRegenerator.regenList.contains(pair)) {
+    		ChunkRegenerator.regenList.remove(pair);
+//    		ChunkLibrary.LOGGER.debug("Chunk at " + pos.toString() + " in " + LevelHelper.getDimensionID(level) + " regenerated.");
+    	}
     }
 }

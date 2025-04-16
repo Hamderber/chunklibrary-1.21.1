@@ -15,7 +15,7 @@ public class ChunkRegenerator {
 	
 	public static void regenerateChunk(ServerLevel level, ChunkPos pos) {
 		regenList.add(Pair.of(LevelHelper.getDimensionID(level), ChunkPos.asLong(pos.x, pos.z)));
-		ChunkLibrary.LOGGER.debug("Chunk at " + pos.toString() + " scheduled to regenerate.");
+//		ChunkLibrary.LOGGER.debug("Chunk at " + pos.toString() + " scheduled to regenerate.");
 	}
 	
 	public static void regenerateChunk(String dimensionID, int x, int z) {

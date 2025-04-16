@@ -1,6 +1,6 @@
 package com.hamderber.chunklibrary;
 
-import com.hamderber.chunklibrary.data.ChunkAgeData;
+import com.hamderber.chunklibrary.data.ChunkData;
 import com.hamderber.chunklibrary.util.TimeHelper;
 
 import net.minecraft.server.level.ServerLevel;
@@ -20,7 +20,7 @@ public class ChunkHandler {
 //		StringBuilder message = new StringBuilder("Chunk loaded at " + event.getChunk().getPos().toString() +
 //				" on day " + currentDay);
 		
-		ChunkAgeData data = ChunkAgeData.get(level);
+		ChunkData data = ChunkData.get(level);
 		ChunkPos pos = event.getChunk().getPos();
 		
 		if (event.isNewChunk() || currentDay <= 1) {
