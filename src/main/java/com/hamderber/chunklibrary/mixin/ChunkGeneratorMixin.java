@@ -5,17 +5,23 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.At;
 
 import com.hamderber.chunklibrary.ChunkLibrary;
+import com.hamderber.chunklibrary.config.ConfigAPI;
+import com.hamderber.chunklibrary.data.ChunkData;
+import com.hamderber.chunklibrary.util.LevelHelper;
 import com.hamderber.chunklibrary.util.SeedUtil;
+import com.hamderber.chunklibrary.util.TimeHelper;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.OreFeature;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
 
 @Mixin(ChunkGenerator.class)
 public class ChunkGeneratorMixin {
@@ -28,9 +34,15 @@ public class ChunkGeneratorMixin {
 	)
 	private boolean redirectFeaturePlacement(PlacedFeature instance, WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
 		if (instance.feature().value().feature() instanceof OreFeature) {
-		    long newSeed = SeedUtil.getFeatureGenSeed(level.getLevel());
-		    random.setSeed(newSeed);
-		    ChunkLibrary.LOGGER.debug("Placing feature: minecraft:ore " + newSeed);
+			ServerLevel serverLevel = level.getLevel();
+			
+			boolean isFirstLoad = ChunkData.get(serverLevel).isFirstTimeGeneration(serverLevel, LevelHelper.chunkPosFromBlockPos(origin));
+			
+			if (ConfigAPI.isOreDisabled(serverLevel) && !isFirstLoad) return false; // sending false makes minecraft move to the next generation step
+			
+			if (ConfigAPI.isRandomOreEnabled(serverLevel) && !isFirstLoad) {
+				random.setSeed(SeedUtil.getFeatureSeed(TimeHelper.getGameOverworldDay(), origin, "minecraft:ore"));
+			}
 		}
 		
 	    return instance.placeWithBiomeCheck(level, generator, random, origin);
