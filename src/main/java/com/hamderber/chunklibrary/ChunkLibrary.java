@@ -78,12 +78,13 @@ public class ChunkLibrary
         	            .executes(context -> {
         	                long days = LongArgumentType.getLong(context, "days");
         	                long ticks = days * Level.TICKS_PER_DAY;
-        	                long age = TimeHelper.getWorldAge();
         	                
         	                TimeTrackerData.get().tick(ticks);
+        	                
+        	                long age = TimeHelper.getWorldAge();
 
         	                context.getSource().sendSuccess(() ->
-        	                    Component.literal("Aged the world by " + days + " days. Is now " + age + " days old."),
+        	                    Component.literal("Aged the world by " + days + " days. It is now " + age + " days old."),
         	                    true
         	                );
 

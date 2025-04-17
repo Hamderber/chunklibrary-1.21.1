@@ -30,8 +30,8 @@ public class ChunkGeneratorMixin {
 	    at = @At(
 	        value = "INVOKE",
 	        target = "Lnet/minecraft/world/level/levelgen/placement/PlacedFeature;placeWithBiomeCheck(Lnet/minecraft/world/level/WorldGenLevel;Lnet/minecraft/world/level/chunk/ChunkGenerator;Lnet/minecraft/util/RandomSource;Lnet/minecraft/core/BlockPos;)Z"
-	    )
-	)
+	    ) // Redirect instead of inject because I want to preserve the game's randomness for everything that relies on the world seed.
+	)     // By injecting here, the world determinism of the original seed is kept outside of ores.
 	private boolean redirectFeaturePlacement(PlacedFeature instance, WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
 		if (instance.feature().value().feature() instanceof OreFeature) {
 			ServerLevel serverLevel = level.getLevel();

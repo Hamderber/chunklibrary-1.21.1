@@ -7,7 +7,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.hamderber.chunklibrary.ChunkLibrary;
 import com.hamderber.chunklibrary.config.ConfigAPI;
 import com.hamderber.chunklibrary.data.ChunkData;
 import com.hamderber.chunklibrary.util.LevelHelper;
