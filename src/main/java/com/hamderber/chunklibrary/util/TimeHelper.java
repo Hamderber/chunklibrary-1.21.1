@@ -45,7 +45,7 @@ public class TimeHelper {
 		return getCurrentDay(ServerLifecycleHooks.getCurrentServer().getLevel(Level.OVERWORLD));
 	}
 	
-	public static long getTrueOverworldDay() {
+	public static long getWorldAge() {
 		// tracking the day by counting ticks mitigates issues with time dilation
 		return TimeTrackerData.get().getTotalDays();
 	}

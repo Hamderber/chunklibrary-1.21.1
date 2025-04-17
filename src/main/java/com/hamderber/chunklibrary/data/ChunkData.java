@@ -89,13 +89,13 @@ public class ChunkData extends SavedData {
 	}
 	
 	public void setLastGeneratedDayNow(ServerLevel level, ChunkPos pos) {
-		setLastGeneratedDay(level, pos, TimeHelper.getTrueOverworldDay());
+		setLastGeneratedDay(level, pos, TimeHelper.getWorldAge());
 	}
 
 	public long getLastGeneratedDay(ServerLevel level, ChunkPos pos) {
 		Map<Long, Long> dimMap = ageMap.get(LevelHelper.getDimensionID(level));
 		
-		long defaultDay = TimeHelper.getTrueOverworldDay();
+		long defaultDay = TimeHelper.getWorldAge();
 		
 		if (dimMap == null) return defaultDay;
 		
@@ -127,7 +127,7 @@ public class ChunkData extends SavedData {
     }
     
     public long getChunkAge(ServerLevel level, ChunkPos pos) {
-    	long currentDay = TimeHelper.getTrueOverworldDay();
+    	long currentDay = TimeHelper.getWorldAge();
 		long lastGeneratedDay = getLastGeneratedDay(level, pos);
 		
     	return currentDay - lastGeneratedDay;

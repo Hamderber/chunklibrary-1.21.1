@@ -41,7 +41,7 @@ public class ChunkGeneratorMixin {
 			if (ConfigAPI.isOreDisabled(serverLevel) && !isFirstLoad) return false; // sending false makes minecraft move to the next generation step
 			
 			if (ConfigAPI.isRandomOreEnabled(serverLevel) && !isFirstLoad) {
-				random.setSeed(SeedUtil.getFeatureSeed(TimeHelper.getGameOverworldDay(), origin, "minecraft:ore"));
+				random.setSeed(SeedUtil.getFeatureSeed(TimeHelper.getWorldAge(), origin, "minecraft:ore"));
 			}
 		}
 		

@@ -78,7 +78,7 @@ public class ChunkLibrary
         	            .executes(context -> {
         	                long days = LongArgumentType.getLong(context, "days");
         	                long ticks = days * Level.TICKS_PER_DAY;
-        	                long age = TimeHelper.getTrueOverworldDay();
+        	                long age = TimeHelper.getWorldAge();
         	                
         	                TimeTrackerData.get().tick(ticks);
 
@@ -94,7 +94,7 @@ public class ChunkLibrary
     	    .requires(source -> source.hasPermission(2))
     	    	.then(Commands.literal("get_world_age")
     	            .executes(context -> {
-	                	long days = TimeHelper.getTrueOverworldDay();
+	                	long days = TimeHelper.getWorldAge();
 	                	
     	                context.getSource().sendSuccess(() ->
     	                    Component.literal("The world, since mod installation, is " + days + " day" + (days == 1 ? "" : "s") + " old."),
@@ -165,7 +165,7 @@ public class ChunkLibrary
                                 .executes(context -> {
                                     TimeTrackerData.get().resetTotalDays();
                                     
-                                    long age = TimeHelper.getTrueOverworldDay();
+                                    long age = TimeHelper.getWorldAge();
                                     
                                     context.getSource().sendSuccess(() ->
                                         Component.literal("The world is now " + age + " days old."),

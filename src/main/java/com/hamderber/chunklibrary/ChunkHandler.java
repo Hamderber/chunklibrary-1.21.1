@@ -13,7 +13,7 @@ public class ChunkHandler {
 	public void onLoadChunk(ChunkEvent.Load event) {
 		if (!(event.getLevel() instanceof ServerLevel level)) return;
 		
-		long currentDay = TimeHelper.getTrueOverworldDay();
+		long currentDay = TimeHelper.getWorldAge();
 		
 		ChunkData data = ChunkData.get(level);
 		ChunkPos pos = event.getChunk().getPos();
