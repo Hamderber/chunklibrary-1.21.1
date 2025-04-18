@@ -2,7 +2,9 @@ package com.hamderber.chunklibrary.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 
 import com.hamderber.chunklibrary.ChunkLibrary;
 import com.hamderber.chunklibrary.config.ConfigAPI;
@@ -16,8 +18,13 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.feature.OreFeature;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
@@ -46,5 +53,15 @@ public class ChunkGeneratorMixin {
 		}
 		
 	    return instance.placeWithBiomeCheck(level, generator, random, origin);
+	}
+	
+	@Inject(method = "applyBiomeDecoration", at = @At("TAIL")) // using ChunkAccess makes block scanning safe
+	private void afterBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager, CallbackInfo ci) {
+		ChunkPos chunkPos = chunk.getPos();
+		ServerLevel serverLevel = level.getLevel();
+		
+	    int airSampleCount = LevelHelper.sampleAirBlocksSafe(serverLevel, chunk, true); // ignore tps for generating new chunks to prevent problems
+
+	    ChunkData.get(serverLevel).setInitialAirEstimate(serverLevel, chunkPos, airSampleCount);
 	}
 }

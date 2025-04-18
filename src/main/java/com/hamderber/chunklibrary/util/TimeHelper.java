@@ -49,4 +49,9 @@ public class TimeHelper {
 		// tracking the day by counting ticks mitigates issues with time dilation
 		return TimeTrackerData.get().getTotalDays();
 	}
+	
+	public static double getAverageTPS() {
+		double tickTime = ServerLifecycleHooks.getCurrentServer().getAverageTickTimeNanos();
+	    return 1_000_000_000.0 / tickTime;
+	}
 }
