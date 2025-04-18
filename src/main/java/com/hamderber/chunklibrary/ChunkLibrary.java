@@ -121,17 +121,16 @@ public class ChunkLibrary
                                 long age = data.getChunkAge(level, chunkPos);
                                 long numRegen = data.getTimesGenerated(level, chunkPos);
                                 
-                                int airEstimate = data.getInitialAirEstimate(level, chunkPos);
-                                data.setCurrentAirEstimate(level, chunkPos, airEstimate);
+                                int airEstimate = data.getCurrentAirEstimate(level, chunkPos);
                                 int airDelta = data.getAirDelta(level, chunkPos);
 
                                 context.getSource().sendSuccess(() ->
                                     Component.literal("Chunk at " + chunkPos.toString() + " in " + LevelHelper.getDimensionID(level) + 
                                 		", since mod installation, is " + age + " days old and has been generated " + numRegen + 
-                                		" time(s). When it was generated, ~" + airEstimate + " relavant air blocks were present, " +
-                                		"with a delta of ~" + airDelta +" air block" + (airDelta == 1 ? "" : "s") + " since last scan. " +
-                                		"This chunk " + (data.shouldResetChunk(level, chunkPos, ConfigAPI.FEATURE_REGEN_PERIODS.get(LevelHelper.getDimensionID(level)).get()) ? "should" : "should not") + 
-                                		" regenerate."),
+                                		" time(s). " + (airEstimate == -1 ? 
+                                				"The chunk has not yet been scanned for air. " : 
+                                				"Last scan had " + airEstimate + " near-surface air blocks. " + "Since then, +/- " + airDelta +" air block" + (airDelta == 1 ? "" : "s") + " have changed. ") +            		
+                                		"This chunk " + (data.shouldResetChunk(level, chunkPos, ConfigAPI.FEATURE_REGEN_PERIODS.get(LevelHelper.getDimensionID(level)).get()) ? "should" : "should not") + " regenerate."),
                                     true
                                 );
 

@@ -1,5 +1,6 @@
 package com.hamderber.chunklibrary.mixin;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,7 +14,6 @@ import com.hamderber.chunklibrary.util.LevelHelper;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunkSection;
@@ -30,7 +30,7 @@ public class ChunkSerializerMixin {
     private static void onReadStart(ServerLevel level, PoiManager poiManager, RegionStorageInfo regionStorageInfo, ChunkPos pos, CompoundTag tag, CallbackInfoReturnable<ProtoChunk> cir) {
     	net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new StartLoad(level, poiManager, regionStorageInfo, pos, tag));
     	
-    	Tuple<String, Long> entry = new Tuple<String, Long>(LevelHelper.getDimensionID(level), ChunkPos.asLong(pos.x, pos.z));
+    	Pair<String, Long> entry = Pair.of(LevelHelper.getDimensionID(level), ChunkPos.asLong(pos.x, pos.z));
     	
     	if (ChunkRegenerator.regenList.contains(entry)) {
     		ProtoChunk dummy = new ProtoChunk(
@@ -53,7 +53,7 @@ public class ChunkSerializerMixin {
     private static void onReadEnd(ServerLevel level, PoiManager poiManager, RegionStorageInfo regionStorageInfo, ChunkPos pos, CompoundTag tag, CallbackInfoReturnable<ProtoChunk> cir) {
     	net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new EndLoad(level, poiManager, regionStorageInfo, pos, tag));
 
-    	Tuple<String, Long> entry = new Tuple<String, Long>(LevelHelper.getDimensionID(level), ChunkPos.asLong(pos.x, pos.z));
+    	Pair<String, Long> entry = Pair.of(LevelHelper.getDimensionID(level), ChunkPos.asLong(pos.x, pos.z));
     	
 		ChunkRegenerator.regenList.remove(entry);
     }

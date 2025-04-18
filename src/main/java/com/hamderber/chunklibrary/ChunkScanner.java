@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.hamderber.chunklibrary.config.ConfigAPI;
+import com.hamderber.chunklibrary.data.ChunkData;
 import com.hamderber.chunklibrary.util.LevelHelper;
 
 import net.minecraft.server.level.ServerLevel;
@@ -43,23 +44,29 @@ public class ChunkScanner {
             
             ServerLevel level = LevelHelper.getServerLevel(key.dimId());
             if (level == null) continue;
+            
+            ChunkPos chunkPos = new ChunkPos(ChunkPos.getX(key.posLong()), ChunkPos.getZ(key.posLong()));
 
-            int chunkPosX = ChunkPos.getX(key.posLong());
-            int chunkPosZ = ChunkPos.getZ(key.posLong());
-
-            LevelChunk chunk = level.getChunkSource().getChunkNow(chunkPosX, chunkPosZ); // only get chunk if its loaded
+            LevelChunk chunk = level.getChunkSource().getChunkNow(chunkPos.x, chunkPos.z); // only get chunk if its loaded
             if (chunk == null) continue;
             
-            int airSample = LevelHelper.sampleAirBlocksSafe(level, chunk, false);
-            if (airSample == -1) {
+            int airCount = LevelHelper.sampleAirBlocksSafe(level, chunk, false);
+            if (airCount == -1) {
                 // not scanned so requeue
-                queueChunkForScan(level, new ChunkPos(chunkPosX, chunkPosZ));
+                queueChunkForScan(level, new ChunkPos(chunkPos.x, chunkPos.z));
             }
 
             chunkCount++;
+            
+            ChunkData data = ChunkData.get(level);
+            if (data.getInitialAirEstimate(level, chunkPos) == -1) {
+            	data.setInitialAirEstimate(level, chunkPos, airCount);
+            }
+            
+            data.setCurrentAirEstimate(level, chunkPos, airCount);
 
-            ChunkLibrary.LOGGER.debug("Chunk at [" + chunkPosX + ", " + chunkPosZ + "] scanned. "
-                + "Air Sample: " + airSample + " "
+            ChunkLibrary.LOGGER.debug("Chunk at [" + chunkPos.x + ", " + chunkPos.z + "] scanned. "
+                + "Air Sample: " + airCount + " "
                 + "Queue size: " + pendingScanQueue.size() + " "
                 + "Chunk # in tick: " + chunkCount);
         }
@@ -76,4 +83,6 @@ public class ChunkScanner {
             pendingScanQueue.add(key);
         }
     }
+    
+    
 }

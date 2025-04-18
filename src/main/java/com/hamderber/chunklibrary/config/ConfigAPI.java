@@ -17,11 +17,21 @@ public class ConfigAPI {
 	public static final Map<String, BooleanValue> RANDOM_ORE_ENABLED = new HashMap<>();
 	public static final Map<String, BooleanValue> RANDOM_TREE_ENABLED = new HashMap<>();
 	public static final Map<String, BooleanValue> RANDOM_MOB_ENABLED = new HashMap<>();
+	public static final Map<String, DoubleValue> DIMENSION_SCAN_FACTORS = new HashMap<>();
 	public static IntValue CHUNK_SCAN_FLAGGING_CHANCE_MODULO;
 	public static DoubleValue SKIP_CHUNK_SCAN_BELOW_TPS;
 	public static IntValue TICKS_BETWEEN_CHUNK_SCAN_BATCH;
 	public static IntValue MAX_CHUNK_SCANS_PER_BATCH;
     
+	public static double getDimensionScanFactor(ServerLevel level) {
+		return getDimensionScanFactor(LevelHelper.getDimensionID(level));
+	}
+	
+	public static double getDimensionScanFactor(String dimensionID) {
+		DoubleValue value = DIMENSION_SCAN_FACTORS.get(dimensionID);
+		return value != null ? value.get() : 0.35;
+	}
+	
 	public static int getMaxChunkScansPerBatch() {
 		return MAX_CHUNK_SCANS_PER_BATCH != null ? MAX_CHUNK_SCANS_PER_BATCH.get() : 3;
 	}

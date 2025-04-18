@@ -58,12 +58,6 @@ public class ChunkGeneratorMixin {
 	
 	@Inject(method = "applyBiomeDecoration", at = @At("TAIL")) // using ChunkAccess makes block scanning safe
 	private void afterBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager, CallbackInfo ci) {
-		ChunkPos chunkPos = chunk.getPos();
-		ServerLevel serverLevel = level.getLevel();
-		
-//	    int airSampleCount = LevelHelper.sampleAirBlocksSafe(serverLevel, chunk, true); // ignore tps for generating new chunks to prevent problems
-
-//	    ChunkData.get(serverLevel).setInitialAirEstimate(serverLevel, chunkPos, airSampleCount);
-		ChunkScanner.queueChunkForScan(serverLevel, chunkPos);
+		ChunkScanner.queueChunkForScan(level.getLevel(), chunk.getPos());
 	}
 }

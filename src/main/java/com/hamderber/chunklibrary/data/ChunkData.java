@@ -227,7 +227,7 @@ public class ChunkData extends SavedData {
 
     	if (airLossThreshold > 1) {
     	    int initialAir = getInitialAirEstimate(level, pos);
-    	    ChunkLibrary.LOGGER.debug("Initial air estimate: {}", initialAir);
+//    	    ChunkLibrary.LOGGER.debug("Initial air estimate: {}", initialAir);
 
 //    	    if (initialAir <= 0) {
 //    	        ChunkLibrary.LOGGER.debug("Skipping air delta check due to invalid initial air (<= 0). Returning false");
@@ -236,16 +236,18 @@ public class ChunkData extends SavedData {
 //    	    }
 
     	    int currentAir = getCurrentAirEstimate(level, pos);
-    	    ChunkLibrary.LOGGER.debug("Current air estimate: {}", currentAir);
+//    	    ChunkLibrary.LOGGER.debug("Current air estimate: {}", currentAir);
     	    
-    	    int airDelta = getAirDelta(level, pos);
-    	    ChunkLibrary.LOGGER.debug("Air delta: {}", airDelta);
+    	    
 
     	    if (initialAir < 0 || currentAir < 0) { // current air is -1 if invalid or skipped due to low tps
-    	        ChunkLibrary.LOGGER.debug("Air delta check skipped due to TPS or data unavailability");
+//    	        ChunkLibrary.LOGGER.debug("Air delta check skipped due to TPS or data unavailability");
     	        return false;//age >= ageLimit;
     	    }
 
+    	    int airDelta = getAirDelta(level, pos);
+//    	    ChunkLibrary.LOGGER.debug("Air delta: {}", airDelta);
+    	    
     	    boolean shouldReset = age >= ageLimit && airDelta >= airLossThreshold;
     	    ChunkLibrary.LOGGER.debug("Final decision: ageCheck={}, airCheck={}, shouldReset={}",
     	        age >= ageLimit, airDelta >= airLossThreshold, shouldReset);
@@ -253,7 +255,7 @@ public class ChunkData extends SavedData {
     	    return shouldReset;
     	} else {
     	    boolean shouldReset = age >= ageLimit;
-    	    ChunkLibrary.LOGGER.debug("Air loss threshold too low or disabled. Should reset based on age only: {}", shouldReset);
+//    	    ChunkLibrary.LOGGER.debug("Air loss threshold too low or disabled. Should reset based on age only: {}", shouldReset);
     	    return shouldReset;
     	}
     }

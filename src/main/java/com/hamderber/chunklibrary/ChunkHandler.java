@@ -22,6 +22,7 @@ public class ChunkHandler {
 		if (event.isNewChunk()) {
 				data.setLastGeneratedDay(level, pos, currentDay);
 				data.incrementTimesGenerated(level, pos);
+				ChunkScanner.queueChunkForScan(level, pos);
 		}
 		else if (data.getInitialAirEstimate(level, pos) <= 0 || data.getCurrentAirEstimate(level, pos) <= 0 ) {//|| Math.abs(Long.hashCode(pos.toLong())) % 1/*ConfigAPI.getChunkScanFrequency()*/ == 0) { // reduce scan frequency (performance)
 			int regenPeriod = ConfigAPI.getRegenPeriod(level);
@@ -31,6 +32,7 @@ public class ChunkHandler {
 			
 			if (data.getChunkAge(level, pos) >= (int)(regenPeriod * PERCENT_OF_AGE_TO_SCAN) || true) {//bypass check for testing
 				ChunkScanner.queueChunkForScan(level, pos);
+				ChunkLibrary.LOGGER.debug("Queued chunk for scan at " + pos.toString());
 			}
 		}
 	}
