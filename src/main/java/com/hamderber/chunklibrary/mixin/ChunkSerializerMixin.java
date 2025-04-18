@@ -7,7 +7,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.hamderber.chunklibrary.ChunkRegenerator;
-import com.hamderber.chunklibrary.events.ChunkLibraryEvent;
 import com.hamderber.chunklibrary.events.EndLoad;
 import com.hamderber.chunklibrary.events.StartLoad;
 import com.hamderber.chunklibrary.util.LevelHelper;
@@ -31,9 +30,9 @@ public class ChunkSerializerMixin {
     private static void onReadStart(ServerLevel level, PoiManager poiManager, RegionStorageInfo regionStorageInfo, ChunkPos pos, CompoundTag tag, CallbackInfoReturnable<ProtoChunk> cir) {
     	net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new StartLoad(level, poiManager, regionStorageInfo, pos, tag));
     	
-    	Pair<String, Long> pair = Pair.of(LevelHelper.getDimensionID(level), ChunkPos.asLong(pos.x, pos.z));
+    	Pair<String, Long> entry = Pair.of(LevelHelper.getDimensionID(level), ChunkPos.asLong(pos.x, pos.z));
     	
-    	if (ChunkRegenerator.regenList.contains(pair)) {
+    	if (ChunkRegenerator.regenList.contains(entry)) {
     		ProtoChunk dummy = new ProtoChunk(
 	            pos,
 	            UpgradeData.EMPTY,
@@ -53,9 +52,9 @@ public class ChunkSerializerMixin {
     @Inject(method = "read", at = @At("TAIL"), cancellable = true)
     private static void onReadEnd(ServerLevel level, PoiManager poiManager, RegionStorageInfo regionStorageInfo, ChunkPos pos, CompoundTag tag, CallbackInfoReturnable<ProtoChunk> cir) {
     	net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new EndLoad(level, poiManager, regionStorageInfo, pos, tag));
+
+    	Pair<String, Long> entry = Pair.of(LevelHelper.getDimensionID(level), ChunkPos.asLong(pos.x, pos.z));
     	
-    	Pair<String, Long> pair = Pair.of(LevelHelper.getDimensionID(level), ChunkPos.asLong(pos.x, pos.z));
-    	
-		ChunkRegenerator.regenList.remove(pair);
+		ChunkRegenerator.regenList.remove(entry);
     }
 }

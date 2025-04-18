@@ -70,6 +70,14 @@ public class TimeTrackerData extends SavedData {
     public void resetTotalDays() {
     	totalDays = 0;
     	totalTicks = 0;
+    	
+    	setDirty();
+    }
+    
+    public void setTotalDays(long days) {
+    	totalDays = days;
+    	totalTicks = days * Level.TICKS_PER_DAY;
+    	
     	setDirty();
     }
 }

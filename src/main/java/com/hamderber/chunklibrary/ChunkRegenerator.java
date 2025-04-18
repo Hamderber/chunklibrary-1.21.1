@@ -27,7 +27,7 @@ public class ChunkRegenerator {
 	    }
 	    
 	    ChunkPos chunkPos = new ChunkPos(x, z);
-
+	    
 	    regenerateChunk(level, chunkPos);
 	}
 }
