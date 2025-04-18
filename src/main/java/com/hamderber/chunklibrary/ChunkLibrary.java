@@ -39,6 +39,7 @@ public class ChunkLibrary
     	NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
     	NeoForge.EVENT_BUS.register(new ChunkHandler());
     	NeoForge.EVENT_BUS.register(new TimeHelper());
+    	NeoForge.EVENT_BUS.register(new SuffocationFixer());
     }
     
     private void onRegisterCommands(RegisterCommandsEvent event) {
