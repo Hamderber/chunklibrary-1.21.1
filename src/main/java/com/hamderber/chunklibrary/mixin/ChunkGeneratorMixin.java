@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 
 import com.hamderber.chunklibrary.ChunkLibrary;
+import com.hamderber.chunklibrary.ChunkScanner;
 import com.hamderber.chunklibrary.config.ConfigAPI;
 import com.hamderber.chunklibrary.data.ChunkData;
 import com.hamderber.chunklibrary.util.LevelHelper;
@@ -60,8 +61,9 @@ public class ChunkGeneratorMixin {
 		ChunkPos chunkPos = chunk.getPos();
 		ServerLevel serverLevel = level.getLevel();
 		
-	    int airSampleCount = LevelHelper.sampleAirBlocksSafe(serverLevel, chunk, true); // ignore tps for generating new chunks to prevent problems
+//	    int airSampleCount = LevelHelper.sampleAirBlocksSafe(serverLevel, chunk, true); // ignore tps for generating new chunks to prevent problems
 
-	    ChunkData.get(serverLevel).setInitialAirEstimate(serverLevel, chunkPos, airSampleCount);
+//	    ChunkData.get(serverLevel).setInitialAirEstimate(serverLevel, chunkPos, airSampleCount);
+		ChunkScanner.queueChunkForScan(serverLevel, chunkPos);
 	}
 }

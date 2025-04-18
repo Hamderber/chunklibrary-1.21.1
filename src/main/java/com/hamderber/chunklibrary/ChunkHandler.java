@@ -2,7 +2,6 @@ package com.hamderber.chunklibrary;
 
 import com.hamderber.chunklibrary.config.ConfigAPI;
 import com.hamderber.chunklibrary.data.ChunkData;
-import com.hamderber.chunklibrary.util.LevelHelper;
 import com.hamderber.chunklibrary.util.TimeHelper;
 
 import net.minecraft.server.level.ServerLevel;
@@ -24,25 +23,15 @@ public class ChunkHandler {
 				data.setLastGeneratedDay(level, pos, currentDay);
 				data.incrementTimesGenerated(level, pos);
 		}
-		else if (data.getInitialAirEstimate(level, pos) <= 0 || data.getCurrentAirEstimate(level, pos) <= 0) {
-			int airSample = LevelHelper.sampleAirBlocksSafe(level, event.getChunk(), true);
+		else if (data.getInitialAirEstimate(level, pos) <= 0 || data.getCurrentAirEstimate(level, pos) <= 0 ) {//|| Math.abs(Long.hashCode(pos.toLong())) % 1/*ConfigAPI.getChunkScanFrequency()*/ == 0) { // reduce scan frequency (performance)
+			int regenPeriod = ConfigAPI.getRegenPeriod(level);
+			if (regenPeriod == -1) return;
 			
-			if (data.getInitialAirEstimate(level, pos) <= 0) {
-				// The initial air estimate may be <= 0 if it is skipped for some reason
-				data.setInitialAirEstimate(level, pos, airSample);
-				ChunkLibrary.LOGGER.debug("Set initial air estimate: {}", airSample);
+			final double PERCENT_OF_AGE_TO_SCAN = 0.9;// only scan when a chunk is close to being old enough to regen to save on performance
+			
+			if (data.getChunkAge(level, pos) >= (int)(regenPeriod * PERCENT_OF_AGE_TO_SCAN) || true) {//bypass check for testing
+				ChunkScanner.queueChunkForScan(level, pos);
 			}
-			
-			data.setCurrentAirEstimate(level, pos, airSample);
-			ChunkLibrary.LOGGER.debug("Set current air estimate: {}", airSample);
-		}
-		else if (Math.abs(Long.hashCode(pos.toLong())) % 1/*ConfigAPI.getChunkScanFrequency()*/ == 0) { // reduce scan frequency (performance)
-			int airSample = LevelHelper.sampleAirBlocksSafe(level, event.getChunk(), false);
-			
-			if (airSample < 0) return; // dont set to -1 if skipped for tps concerns
-			
-			data.setCurrentAirEstimate(level, pos, airSample);
-			ChunkLibrary.LOGGER.debug("Routine scan set current air estimate: {}", airSample);
 		}
 	}
 }

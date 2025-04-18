@@ -14,7 +14,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
+
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -40,6 +40,7 @@ public class ChunkLibrary
     	NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
     	NeoForge.EVENT_BUS.register(new ChunkHandler());
     	NeoForge.EVENT_BUS.register(new TimeHelper());
+    	NeoForge.EVENT_BUS.register(new ChunkScanner());
     }
     
     private void onRegisterCommands(RegisterCommandsEvent event) {
