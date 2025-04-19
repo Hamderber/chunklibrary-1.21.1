@@ -12,18 +12,23 @@ import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
-
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import com.hamderber.chunklibrary.config.ConfigAPI;
 import com.hamderber.chunklibrary.data.ChunkData;
 import com.hamderber.chunklibrary.data.TimeTrackerData;
+import com.hamderber.chunklibrary.data.WorldRegenData;
 import com.hamderber.chunklibrary.util.LevelHelper;
 import com.hamderber.chunklibrary.util.TimeHelper;
 
@@ -41,6 +46,7 @@ public class ChunkLibrary
     	NeoForge.EVENT_BUS.register(new ChunkHandler());
     	NeoForge.EVENT_BUS.register(new TimeHelper());
     	NeoForge.EVENT_BUS.register(new ChunkScanner());
+    	NeoForge.EVENT_BUS.register(new SuffocationFixer());
     }
     
     private void onRegisterCommands(RegisterCommandsEvent event) {
@@ -130,7 +136,7 @@ public class ChunkLibrary
                                 		" time(s). " + (airEstimate == -1 ? 
                                 				"The chunk has not yet been scanned for air. " : 
                                 				"Last scan had " + airEstimate + " near-surface air blocks. " + "Since then, +/- " + airDelta +" air block" + (airDelta == 1 ? "" : "s") + " have changed. ") +            		
-                                		"This chunk " + (data.shouldResetChunk(level, chunkPos, ConfigAPI.FEATURE_REGEN_PERIODS.get(LevelHelper.getDimensionID(level)).get()) ? "should" : "should not") + " regenerate."),
+                                		"This chunk " + (data.shouldResetChunk(level, chunkPos, ConfigAPI.FEATURE_REGEN_PERIODS.get(LevelHelper.getDimensionID(level)).get()) ? "is" : "is not") + " eligible to regenerate."),
                                     true
                                 );
 
@@ -238,5 +244,35 @@ public class ChunkLibrary
 
                                 return 1;
                             })));
-}
+        
+        dispatcher.register(Commands.literal("chunklibrary")
+                .requires(source -> source.hasPermission(2))
+                    .then(Commands.literal("debug_dump_config")
+                                .executes(context -> {
+                                    context.getSource().sendSuccess(() ->
+                                        Component.literal(ConfigAPI.dumpConfigSettings()),
+                                        true
+                                    );
+
+                                    return 1;
+                                })));
+        
+        dispatcher.register(Commands.literal("chunklibrary")
+                .requires(source -> source.hasPermission(2))
+                    .then(Commands.literal("debug_dump_dimensions")
+                                .executes(context -> {
+                                	
+                                	StringBuilder dimensionIds = new StringBuilder();
+                                	
+                                	for (ServerLevel level : ServerLifecycleHooks.getCurrentServer().getAllLevels()) {
+                                		dimensionIds.append(LevelHelper.getDimensionID(level) + " ");
+                                	}
+                                    context.getSource().sendSuccess(() ->
+                                        Component.literal(dimensionIds.toString()),
+                                        true
+                                    );
+
+                                    return 1;
+                                })));
+        }
 }

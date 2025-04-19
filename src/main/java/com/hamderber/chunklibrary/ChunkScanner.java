@@ -65,10 +65,10 @@ public class ChunkScanner {
             
             data.setCurrentAirEstimate(level, chunkPos, airCount);
 
-            ChunkLibrary.LOGGER.debug("Chunk at [" + chunkPos.x + ", " + chunkPos.z + "] scanned. "
-                + "Air Sample: " + airCount + " "
-                + "Queue size: " + pendingScanQueue.size() + " "
-                + "Chunk # in tick: " + chunkCount);
+//            ChunkLibrary.LOGGER.debug("Chunk at [" + chunkPos.x + ", " + chunkPos.z + "] scanned. "
+//                + "Air Sample: " + airCount + " "
+//                + "Queue size: " + pendingScanQueue.size() + " "
+//                + "Chunk # in tick: " + chunkCount);
         }
     }
 

@@ -249,8 +249,8 @@ public class ChunkData extends SavedData {
 //    	    ChunkLibrary.LOGGER.debug("Air delta: {}", airDelta);
     	    
     	    boolean shouldReset = age >= ageLimit && airDelta >= airLossThreshold;
-    	    ChunkLibrary.LOGGER.debug("Final decision: ageCheck={}, airCheck={}, shouldReset={}",
-    	        age >= ageLimit, airDelta >= airLossThreshold, shouldReset);
+//    	    ChunkLibrary.LOGGER.debug("Final decision: ageCheck={}, airCheck={}, shouldReset={}",
+//    	        age >= ageLimit, airDelta >= airLossThreshold, shouldReset);
 
     	    return shouldReset;
     	} else {

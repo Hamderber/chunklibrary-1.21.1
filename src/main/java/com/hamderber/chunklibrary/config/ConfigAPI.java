@@ -23,6 +23,31 @@ public class ConfigAPI {
 	public static IntValue TICKS_BETWEEN_CHUNK_SCAN_BATCH;
 	public static IntValue MAX_CHUNK_SCANS_PER_BATCH;
     
+	public static String dumpConfigSettings() {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("=== Global Settings ===\n");
+	    sb.append("Chunk Scan Flagging Modulo: ").append(ConfigAPI.CHUNK_SCAN_FLAGGING_CHANCE_MODULO.get()).append("\n");
+	    sb.append("Skip Scan Below TPS: ").append(ConfigAPI.SKIP_CHUNK_SCAN_BELOW_TPS.get()).append("\n");
+	    sb.append("Ticks Between Chunk Scan Batch: ").append(ConfigAPI.TICKS_BETWEEN_CHUNK_SCAN_BATCH.get()).append("\n");
+	    sb.append("Max Chunk Scans Per Batch: ").append(ConfigAPI.MAX_CHUNK_SCANS_PER_BATCH.get()).append("\n\n");
+
+	    sb.append("=== Per-Dimension Settings ===\n");
+
+	    for (String dimension : ConfigAPI.FEATURE_REGEN_PERIODS.keySet()) {
+	        sb.append("[").append(dimension).append("]\n");
+	        sb.append("  Days Between Regen: ").append(ConfigAPI.FEATURE_REGEN_PERIODS.get(dimension).get()).append("\n");
+	        sb.append("  Air Delta Allowed: ").append(ConfigAPI.AIR_DELTA_ALLOWED.get(dimension).get()).append("\n");
+	        sb.append("  Percent of Chunk to Scan: ").append(ConfigAPI.DIMENSION_SCAN_FACTORS.get(dimension).get()).append("\n");
+	        sb.append("  Ore Disabled: ").append(ConfigAPI.ORE_DISABLED.get(dimension).get()).append("\n");
+	        sb.append("  Random Ore Enabled: ").append(ConfigAPI.RANDOM_ORE_ENABLED.get(dimension).get()).append("\n");
+	        sb.append("  Random Tree Enabled: ").append(ConfigAPI.RANDOM_TREE_ENABLED.get(dimension).get()).append("\n");
+	        sb.append("  Random Mob Enabled: ").append(ConfigAPI.RANDOM_MOB_ENABLED.get(dimension).get()).append("\n");
+	        sb.append("\n");
+	    }
+
+	    return sb.toString();
+	}
+	
 	public static double getDimensionScanFactor(ServerLevel level) {
 		return getDimensionScanFactor(LevelHelper.getDimensionID(level));
 	}
