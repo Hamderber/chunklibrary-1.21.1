@@ -1,13 +1,12 @@
 package com.hamderber.chunklibrary.mixin;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.hamderber.chunklibrary.ChunkRegenerator;
-import com.hamderber.chunklibrary.events.ChunkLibraryEvent;
+import com.hamderber.chunklibrary.SuffocationFixer;
+import com.hamderber.chunklibrary.data.WorldRegenData;
 import com.hamderber.chunklibrary.events.EndLoad;
 import com.hamderber.chunklibrary.events.StartLoad;
 import com.hamderber.chunklibrary.util.LevelHelper;
@@ -31,9 +30,9 @@ public class ChunkSerializerMixin {
     private static void onReadStart(ServerLevel level, PoiManager poiManager, RegionStorageInfo regionStorageInfo, ChunkPos pos, CompoundTag tag, CallbackInfoReturnable<ProtoChunk> cir) {
     	net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new StartLoad(level, poiManager, regionStorageInfo, pos, tag));
     	
-    	Pair<String, Long> pair = Pair.of(LevelHelper.getDimensionID(level), ChunkPos.asLong(pos.x, pos.z));
+    	String dimensionID = LevelHelper.getDimensionID(level);
     	
-    	if (ChunkRegenerator.regenList.contains(pair)) {
+    	if (WorldRegenData.get().isMarked(level, pos)) {
     		ProtoChunk dummy = new ProtoChunk(
 	            pos,
 	            UpgradeData.EMPTY,
@@ -45,7 +44,7 @@ public class ChunkSerializerMixin {
 	            null);
     		
 	        dummy.setPersistedStatus(ChunkStatus.EMPTY);
-	        
+		    SuffocationFixer.addChunkToSuffocationCheck(dimensionID, pos.x, pos.z);
 			cir.setReturnValue(dummy);
     	}
     }
@@ -53,9 +52,5 @@ public class ChunkSerializerMixin {
     @Inject(method = "read", at = @At("TAIL"), cancellable = true)
     private static void onReadEnd(ServerLevel level, PoiManager poiManager, RegionStorageInfo regionStorageInfo, ChunkPos pos, CompoundTag tag, CallbackInfoReturnable<ProtoChunk> cir) {
     	net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new EndLoad(level, poiManager, regionStorageInfo, pos, tag));
-    	
-    	Pair<String, Long> pair = Pair.of(LevelHelper.getDimensionID(level), ChunkPos.asLong(pos.x, pos.z));
-    	
-		ChunkRegenerator.regenList.remove(pair);
     }
 }
