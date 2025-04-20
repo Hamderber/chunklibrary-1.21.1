@@ -120,6 +120,6 @@ public class ConfigAPI {
     }
     
     public static int getChunkScanFrequency() {
-    	return CHUNK_SCAN_FLAGGING_CHANCE_MODULO != null ? CHUNK_SCAN_FLAGGING_CHANCE_MODULO.get() : 7; // default 7
+    	return CHUNK_SCAN_FLAGGING_CHANCE_MODULO != null ? CHUNK_SCAN_FLAGGING_CHANCE_MODULO.get() : 7;
     }
 }

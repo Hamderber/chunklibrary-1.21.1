@@ -25,18 +25,21 @@ public class ChunkHandler {
 				data.incrementTimesGenerated(level, pos);
 				ChunkScanner.queueChunkForScan(level, pos);
 		}
-		else if (data.getInitialAirEstimate(level, pos) <= 0 || data.getCurrentAirEstimate(level, pos) <= 0 ) {//|| Math.abs(Long.hashCode(pos.toLong())) % 1/*ConfigAPI.getChunkScanFrequency()*/ == 0) { // reduce scan frequency (performance)
+		else if (Math.abs(Long.hashCode(pos.toLong())) % ConfigAPI.getChunkScanFrequency() == 0) { // reduce scan frequency (performance)
 			int regenPeriod = ConfigAPI.getRegenPeriod(level);
 			if (regenPeriod == -1) return;
 			
-			// make sure to actually scan on first load and have the age check for scanning criteria be serpartae
-			
 			final double PERCENT_OF_AGE_TO_SCAN = 0.9;// only scan when a chunk is close to being old enough to regen to save on performance
 			
-			if (data.getChunkAge(level, pos) >= (int)(regenPeriod * PERCENT_OF_AGE_TO_SCAN) || true) {//bypass check for testing
+			if (data.getChunkAge(level, pos) >= (int)(regenPeriod * PERCENT_OF_AGE_TO_SCAN)) {
 				ChunkScanner.queueChunkForScan(level, pos);
 //				ChunkLibrary.LOGGER.debug("Queued chunk for scan at " + pos.toString());
 			}
+		}
+		
+		if (data.getInitialAirEstimate(level, pos) <= 0 || data.getCurrentAirEstimate(level, pos) <= 0) {
+			// Chunk scan queue is cleared on world exit so there may be stragglers
+			ChunkScanner.queueChunkForScan(level, pos);
 		}
 		
 		// fires after chunk has reloaded

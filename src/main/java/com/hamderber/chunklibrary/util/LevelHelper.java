@@ -1,7 +1,5 @@
 package com.hamderber.chunklibrary.util;
 
-import java.util.Random;
-
 import com.hamderber.chunklibrary.ChunkLibrary;
 import com.hamderber.chunklibrary.config.ConfigAPI;
 
@@ -12,12 +10,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public class LevelHelper {
@@ -73,8 +68,8 @@ public class LevelHelper {
 		 */
 	    long startTime = System.nanoTime();
 
-	    ChunkPos chunkPos = chunk.getPos();
-	    String dimId = LevelHelper.getDimensionID(level);
+//	    ChunkPos chunkPos = chunk.getPos();
+//	    String dimId = LevelHelper.getDimensionID(level);
 
 	    double scanFactor = ConfigAPI.getDimensionScanFactor(level);
 	    int minY = chunk.getMinBuildHeight();
@@ -99,13 +94,13 @@ public class LevelHelper {
 	    long endTime = System.nanoTime();
 	    long durationMicros = (endTime - startTime) / 1000;
 
-	    ChunkLibrary.LOGGER.debug("AirScan [{} | {}]: dim='{}', scanned Y=({}, {}), Air={}, Time={}µs",
-	            chunkPos.x, chunkPos.z,
-	            dimId,
-	            minY, minY + scanHeight,
-	            airCount,
-	            durationMicros
-	    );
+//	    ChunkLibrary.LOGGER.debug("AirScan [{} | {}]: dim='{}', scanned Y=({}, {}), Air={}, Time={}µs",
+//	            chunkPos.x, chunkPos.z,
+//	            dimId,
+//	            minY, minY + scanHeight,
+//	            airCount,
+//	            durationMicros
+//	    );
 
 	    return airCount;
 	}

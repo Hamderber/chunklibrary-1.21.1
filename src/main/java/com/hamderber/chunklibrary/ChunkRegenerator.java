@@ -1,10 +1,5 @@
 package com.hamderber.chunklibrary;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.hamderber.chunklibrary.data.WorldRegenData;
 import com.hamderber.chunklibrary.util.LevelHelper;
 
@@ -22,6 +17,7 @@ public class ChunkRegenerator {
             ChunkLibrary.LOGGER.warn("Failed to find ServerLevel for dimension ID: " + dimensionID);
             return;
         }
+        
         regenerateChunk(level, new ChunkPos(x, z));
     }
 

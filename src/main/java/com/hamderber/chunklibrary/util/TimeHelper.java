@@ -30,7 +30,7 @@ public class TimeHelper {
 		if (!DID_WARN_TIME_DESYNC && Math.abs(realDay - fakeDay) > TIME_DESYNC_THESHOLD) {
 			// Warn of time desync, but not to a point where the log is flooded with warnings.
 			DID_WARN_TIME_DESYNC = true;
-			ChunkLibrary.LOGGER.warn("Time desync detected: trackedDay={}, gameDay={}", realDay, fakeDay);
+			ChunkLibrary.LOGGER.warn("Time desync detected: trackedDay={}, gameDay={}! Was /time used?", realDay, fakeDay);
 		}
 		
 		TimeTrackerData.get().tick(1);

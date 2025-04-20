@@ -1,7 +1,5 @@
 package com.hamderber.chunklibrary;
 
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,9 +19,7 @@ public class ChunkScanner {
     public record ChunkKey(String dimId, long posLong) {}
 
     // using both of these allows for preventing duplicate entries while allowing for a separate container for walking the set
-    // dedupe lookup
     private static final Set<ChunkKey> pendingScanSet = ConcurrentHashMap.newKeySet();
-    // ordered queue
     private static final Queue<ChunkKey> pendingScanQueue = new ConcurrentLinkedQueue<>();
 
     private static int tickCount = 0;
@@ -34,7 +30,7 @@ public class ChunkScanner {
         if (tickCount < ConfigAPI.getTicksBetweenChunkScanBatch()) return;
         tickCount = 0;
         
-        int chunkCount = 0;
+//        int chunkCount = 0;
 
         for (int i = 0; i < ConfigAPI.getMaxChunkScansPerBatch(); i++) {
             ChunkKey key = pendingScanQueue.poll();
@@ -56,7 +52,7 @@ public class ChunkScanner {
                 queueChunkForScan(level, new ChunkPos(chunkPos.x, chunkPos.z));
             }
 
-            chunkCount++;
+//            chunkCount++;
             
             ChunkData data = ChunkData.get(level);
             if (data.getInitialAirEstimate(level, chunkPos) == -1) {
@@ -83,6 +79,4 @@ public class ChunkScanner {
             pendingScanQueue.add(key);
         }
     }
-    
-    
 }

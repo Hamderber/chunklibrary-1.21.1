@@ -1,38 +1,25 @@
 package com.hamderber.chunklibrary;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 
 import com.hamderber.chunklibrary.util.LevelHelper;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.chunk.status.ChunkType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.level.ChunkDataEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 public class SuffocationFixer {
@@ -50,13 +37,13 @@ public class SuffocationFixer {
 		Pair<String, Long> entry = Pair.of(LevelHelper.getDimensionID(level), ChunkPos.asLong(chunkPos.x, chunkPos.z));
 		
     	if (checkForSuffocation.containsKey(entry)) {
-        	ChunkLibrary.LOGGER.debug(chunkPos.toString() + " in suffocation check");
+//        	ChunkLibrary.LOGGER.debug(chunkPos.toString() + " in suffocation check");
 	        DamageType type = event.getSource().type();
 	
 	        if (type.msgId().contains("inWall")) {
 	            BlockPos safe = findSafePositionAbove(entity.blockPosition(), level);
 
-	    		ChunkLibrary.LOGGER.debug("Suffocation damage for: " + entity.toString());
+//	    		ChunkLibrary.LOGGER.debug("Suffocation damage for: " + entity.toString());
 	            if (!safe.equals(entity.blockPosition())) {
 	            	entity.teleportTo(safe.getX() + 0.5, safe.getY(), safe.getZ() + 0.5);
 	                event.setNewDamage(0);
@@ -66,7 +53,7 @@ public class SuffocationFixer {
 	                			.withStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withBold(true)));
 	                }
 	                
-	                ChunkLibrary.LOGGER.debug("Moved " + entity.getName().getString() + " to safe Y: " + safe.getY());
+//	                ChunkLibrary.LOGGER.debug("Moved " + entity.getName().getString() + " to safe Y: " + safe.getY());
 	            }
 	        }
     	}
@@ -102,6 +89,6 @@ public class SuffocationFixer {
     	ChunkPos chunkPos = new ChunkPos(x, z);
     	long chunkPosLong = chunkPos.toLong();
     	checkForSuffocation.put(Pair.of(dimensionID, chunkPosLong), (byte) 0);
-    	ChunkLibrary.LOGGER.debug(chunkPos.toString() + " added to suffocation check");
+//    	ChunkLibrary.LOGGER.debug(chunkPos.toString() + " added to suffocation check");
     }
 }

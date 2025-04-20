@@ -4,9 +4,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.Pair;
-
-import com.hamderber.chunklibrary.ChunkLibrary;
 import com.hamderber.chunklibrary.util.LevelHelper;
 
 import net.minecraft.core.HolderLookup.Provider;
@@ -41,7 +38,7 @@ public class WorldRegenData extends SavedData {
             int posZ = chunkTag.getInt("regen_posZ");
             ChunkRecord record = new ChunkRecord(dim, posX, posZ);
             regenList.add(record);
-            ChunkLibrary.LOGGER.debug("Loaded: " + record);
+//            ChunkLibrary.LOGGER.debug("Loaded: " + record);
         }
     }
 
@@ -79,10 +76,10 @@ public class WorldRegenData extends SavedData {
 
         // Only add the record if it does not already exist
         if (regenList.add(record)) {
-            ChunkLibrary.LOGGER.debug("Added: " + record);
+//            ChunkLibrary.LOGGER.debug("Added: " + record);
             setDirty();
         } else {
-            ChunkLibrary.LOGGER.debug("Chunk already exists: " + record);
+//            ChunkLibrary.LOGGER.debug("Chunk already exists: " + record);
         }
     }
 
@@ -95,19 +92,19 @@ public class WorldRegenData extends SavedData {
         String dimId = LevelHelper.getDimensionID(level);
         ChunkRecord record = new ChunkRecord(dimId, pos.x, pos.z);
         
-        ChunkLibrary.LOGGER.debug("Trying to remove: \"" + record.dim() + "\" pos=" + record.x() + "|" + record.z());
-        for (ChunkRecord r : regenList) {
-            ChunkLibrary.LOGGER.debug("In list: \"" + r.dim() + "\" pos=" + r.x() + "|" + r.z());
-        }
-        
-        for (ChunkRecord r : regenList) {
-            if (r.dim().equals(dimId) && r.x() == pos.x && r.z() == pos.z) {
-                ChunkLibrary.LOGGER.debug("Match found manually: " + r);
-            }
-        }
+//        ChunkLibrary.LOGGER.debug("Trying to remove: \"" + record.dim() + "\" pos=" + record.x() + "|" + record.z());
+//        for (ChunkRecord r : regenList) {
+//            ChunkLibrary.LOGGER.debug("In list: \"" + r.dim() + "\" pos=" + r.x() + "|" + r.z());
+//        }
+//        
+//        for (ChunkRecord r : regenList) {
+//            if (r.dim().equals(dimId) && r.x() == pos.x && r.z() == pos.z) {
+//                ChunkLibrary.LOGGER.debug("Match found manually: " + r);
+//            }
+//        }
         
         if (regenList.remove(record)) {
-            ChunkLibrary.LOGGER.debug("Removed: " + record);
+//            ChunkLibrary.LOGGER.debug("Removed: " + record);
             setDirty();
         }
     }
