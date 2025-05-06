@@ -1,6 +1,5 @@
 package com.hamderber.chunklibrary.util;
 
-import com.hamderber.chunklibrary.ChunkLibrary;
 import com.hamderber.chunklibrary.config.ConfigAPI;
 
 import net.minecraft.core.BlockPos;
@@ -45,7 +44,9 @@ public class LevelHelper {
 	}
 	
 	public static ServerLevel getOverworld() {
-		return ServerLifecycleHooks.getCurrentServer().overworld();
+		MinecraftServer currentServer = ServerLifecycleHooks.getCurrentServer();
+		
+		return currentServer == null ? null : currentServer.overworld();
 	}
 	
 	public static int sampleAirBlocksSafe(ServerLevel level, ChunkAccess chunk, boolean ignoreTPS) {

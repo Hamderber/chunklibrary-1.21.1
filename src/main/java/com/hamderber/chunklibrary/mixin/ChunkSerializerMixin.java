@@ -32,20 +32,25 @@ public class ChunkSerializerMixin {
     	
     	String dimensionID = LevelHelper.getDimensionID(level);
     	
-    	if (WorldRegenData.get().isMarked(level, pos)) {
-    		ProtoChunk dummy = new ProtoChunk(
-	            pos,
-	            UpgradeData.EMPTY,
-	            new LevelChunkSection[level.getSectionsCount()],
-	            new ProtoChunkTicks<>(),
-	            new ProtoChunkTicks<>(),
-	            level,
-	            level.registryAccess().registryOrThrow(Registries.BIOME),
-	            null);
-    		
-	        dummy.setPersistedStatus(ChunkStatus.EMPTY);
-		    SuffocationFixer.addChunkToSuffocationCheck(dimensionID, pos.x, pos.z);
-			cir.setReturnValue(dummy);
+    	try {
+    		if (WorldRegenData.get().isMarked(level, pos)) {
+        		ProtoChunk dummy = new ProtoChunk(
+    	            pos,
+    	            UpgradeData.EMPTY,
+    	            new LevelChunkSection[level.getSectionsCount()],
+    	            new ProtoChunkTicks<>(),
+    	            new ProtoChunkTicks<>(),
+    	            level,
+    	            level.registryAccess().registryOrThrow(Registries.BIOME),
+    	            null);
+        		
+    	        dummy.setPersistedStatus(ChunkStatus.EMPTY);
+    		    SuffocationFixer.addChunkToSuffocationCheck(dimensionID, pos.x, pos.z);
+    			cir.setReturnValue(dummy);
+        	}
+    	}
+    	catch (IllegalStateException ex) {
+			// No-op if getting chunk data failed.
     	}
     }
     
