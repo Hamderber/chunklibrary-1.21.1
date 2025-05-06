@@ -43,10 +43,15 @@ public class ChunkHandler {
 		}
 		
 		// fires after chunk has reloaded
-		WorldRegenData worldRegenData = WorldRegenData.get();
-    	if (worldRegenData.isMarked(level, pos)) {
-    		ChunkLibrary.LOGGER.debug(pos.toString());
-        	WorldRegenData.get().clearChunk(level, pos);
-    	}
+		try {
+			WorldRegenData worldRegenData = WorldRegenData.get();
+			if (worldRegenData.isMarked(level, pos)) {
+	    		ChunkLibrary.LOGGER.debug(pos.toString());
+	        	WorldRegenData.get().clearChunk(level, pos);
+	    	}
+		}
+		catch (IllegalStateException ex) {
+			// No-op if getting chunk data failed.
+		}
 	}
 }

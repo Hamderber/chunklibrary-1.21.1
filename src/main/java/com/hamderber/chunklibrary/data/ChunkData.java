@@ -233,7 +233,7 @@ public class ChunkData extends SavedData {
 //    	        // if this happens, skip. loading the chunk in teh future will correct this
 //    	    	return false;
 //    	    }
-
+    	    
     	    int currentAir = getCurrentAirEstimate(level, pos);
 //    	    ChunkLibrary.LOGGER.debug("Current air estimate: {}", currentAir);
     	    
