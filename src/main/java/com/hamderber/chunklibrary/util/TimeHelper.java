@@ -3,6 +3,7 @@ package com.hamderber.chunklibrary.util;
 import com.hamderber.chunklibrary.ChunkLibrary;
 import com.hamderber.chunklibrary.data.TimeTrackerData;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -16,6 +17,9 @@ public class TimeHelper {
 	
 	@SubscribeEvent
     public void onLevelExit(LevelEvent.Unload event) {
+		// Skip if client side. This should be server-side only.
+		if (event.getLevel().isClientSide()) return;
+		
 		// allow for warning of time desyncs whever a world is unloaded. this is lazier than counting ticks or something else
 		DID_WARN_TIME_DESYNC = false;
 		
@@ -42,7 +46,15 @@ public class TimeHelper {
 	
 	public static long getGameOverworldDay() {
 		// mod interactions or things like /time set day can cause the game day to reset to 0 or be off
-		return getCurrentDay(ServerLifecycleHooks.getCurrentServer().getLevel(Level.OVERWORLD));
+		MinecraftServer currentServer = ServerLifecycleHooks.getCurrentServer();
+		
+		if (currentServer == null) {
+			ChunkLibrary.LOGGER.warn("Server not found! Unable to get the game's Overworld day.");
+			return 0;
+		}
+		else {
+			return getCurrentDay(currentServer.getLevel(Level.OVERWORLD));
+		}
 	}
 	
 	public static long getWorldAge() {
@@ -51,7 +63,15 @@ public class TimeHelper {
 	}
 	
 	public static double getAverageTPS() {
-		double tickTime = ServerLifecycleHooks.getCurrentServer().getAverageTickTimeNanos();
-	    return 1_000_000_000.0 / tickTime;
+		MinecraftServer currentServer = ServerLifecycleHooks.getCurrentServer();
+		
+		if (currentServer == null) {
+			ChunkLibrary.LOGGER.warn("Server not found! Unable to get the server's average TPS.");
+			return 0;
+		}
+		else {
+			double tickTime = currentServer.getAverageTickTimeNanos();
+		    return 1_000_000_000.0 / tickTime;
+		}
 	}
 }
