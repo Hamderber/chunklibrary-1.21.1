@@ -3,7 +3,11 @@ package com.hamderber.chunklibrary.data;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.hamderber.chunklibrary.ChunkLibrary;
 import com.hamderber.chunklibrary.config.ConfigAPI;
+import com.hamderber.chunklibrary.enums.AgeLimit;
+import com.hamderber.chunklibrary.enums.AirEstimate;
+import com.hamderber.chunklibrary.enums.AirLossThreshold;
 import com.hamderber.chunklibrary.util.LevelHelper;
 import com.hamderber.chunklibrary.util.TimeHelper;
 
@@ -11,10 +15,12 @@ import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.minecraft.server.level.ServerLevel;
+import org.jetbrains.annotations.NotNull;
 
 public class ChunkData extends SavedData {
 	private static final String NAME = "chunk_regen_data";
@@ -61,11 +67,11 @@ public class ChunkData extends SavedData {
 	}
 
 	public static ChunkData get(ServerLevel level) {
-		return level.getDataStorage().computeIfAbsent(new SavedData.Factory<ChunkData>(ChunkData::create, ChunkData::load), NAME);
+		return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(ChunkData::create, ChunkData::load), NAME);
 	}
 	
 	@Override
-	public CompoundTag save(CompoundTag tag, Provider provider) {
+	public @NotNull CompoundTag save(@NotNull CompoundTag tag, @NotNull Provider provider) {
 		ListTag list = new ListTag();
 		
 		for (Map.Entry<String, Map<Long, Long>> dimensionEntry : ageMap.entrySet()) {
@@ -166,7 +172,11 @@ public class ChunkData extends SavedData {
     }
     
     public static void resetAllChunkData() {
-        for (ServerLevel level : ServerLifecycleHooks.getCurrentServer().getAllLevels()) {
+		MinecraftServer currentServer = ServerLifecycleHooks.getCurrentServer();
+
+		if (currentServer == null) return;
+
+        for (ServerLevel level : currentServer.getAllLevels()) {
             ChunkData data = ChunkData.get(level);
             String dimensionId = LevelHelper.getDimensionID(level);
             
@@ -196,17 +206,17 @@ public class ChunkData extends SavedData {
     public int getInitialAirEstimate(ServerLevel level, ChunkPos pos) {
         Map<Long, Integer> dimMap = initialAirEstimateMap.get(LevelHelper.getDimensionID(level));
         
-        if (dimMap == null) return -1; // -1 default
+        if (dimMap == null) return AirEstimate.DEFAULT.getValue();
         
-        return dimMap.getOrDefault(ChunkPos.asLong(pos.x, pos.z), -1);
+        return dimMap.getOrDefault(ChunkPos.asLong(pos.x, pos.z), AirEstimate.DEFAULT.getValue());
     }
     
     public int getCurrentAirEstimate(ServerLevel level, ChunkPos pos) {
         Map<Long, Integer> dimMap = currentAirEstimateMap.get(LevelHelper.getDimensionID(level));
         
-        if (dimMap == null) return -1; // -1 default
+        if (dimMap == null) return AirEstimate.DEFAULT.getValue();
         
-        return dimMap.getOrDefault(ChunkPos.asLong(pos.x, pos.z), -1);
+        return dimMap.getOrDefault(ChunkPos.asLong(pos.x, pos.z), AirEstimate.DEFAULT.getValue());
     }
     
     public int getAirDelta(ServerLevel level, ChunkPos pos) {
@@ -219,43 +229,19 @@ public class ChunkData extends SavedData {
     public boolean shouldResetChunk(ServerLevel level, ChunkPos pos, int ageLimit) {
     	int airLossThreshold = ConfigAPI.getAirDeltaThreshold(level);
     	long age = getChunkAge(level, pos);
-    	
-    	// the issue is related to initialair and currentair; one of them is -1 and causing the fallback to just chunk age consistently
-    	
-//    	ChunkLibrary.LOGGER.debug("Checking chunk at {}: age={}, threshold={}", pos, age, airLossThreshold);
+		boolean shouldReset;
 
-    	if (airLossThreshold > 1) {
-    	    int initialAir = getInitialAirEstimate(level, pos);
-//    	    ChunkLibrary.LOGGER.debug("Initial air estimate: {}", initialAir);
-
-//    	    if (initialAir <= 0) {
-//    	        ChunkLibrary.LOGGER.debug("Skipping air delta check due to invalid initial air (<= 0). Returning false");
-//    	        // if this happens, skip. loading the chunk in teh future will correct this
-//    	    	return false;
-//    	    }
-    	    
-    	    int currentAir = getCurrentAirEstimate(level, pos);
-//    	    ChunkLibrary.LOGGER.debug("Current air estimate: {}", currentAir);
-    	    
-    	    
-
-    	    if (initialAir < 0 || currentAir < 0) { // current air is -1 if invalid or skipped due to low tps
-//    	        ChunkLibrary.LOGGER.debug("Air delta check skipped due to TPS or data unavailability");
-    	        return false;//age >= ageLimit;
-    	    }
-
+		// prevent external misconfigurations from unintentionally resetting an entire world
+		if (airLossThreshold == AirLossThreshold.DEFAULT.getValue() && ageLimit == AgeLimit.DEFAULT.getValue()) {
+			ChunkLibrary.LOGGER.warn("Both the air loss and age limits haven't been assigned by an external config, " +
+					"so chunk reset eligibility is unable to be determined. Skipping.");
+			shouldReset = false;
+		} else if (airLossThreshold != AirLossThreshold.DEFAULT.getValue()) {
     	    int airDelta = getAirDelta(level, pos);
-//    	    ChunkLibrary.LOGGER.debug("Air delta: {}", airDelta);
-    	    
-    	    boolean shouldReset = age >= ageLimit && airDelta >= airLossThreshold;
-//    	    ChunkLibrary.LOGGER.debug("Final decision: ageCheck={}, airCheck={}, shouldReset={}",
-//    	        age >= ageLimit, airDelta >= airLossThreshold, shouldReset);
-
-    	    return shouldReset;
-    	} else {
-    	    boolean shouldReset = age >= ageLimit;
-//    	    ChunkLibrary.LOGGER.debug("Air loss threshold too low or disabled. Should reset based on age only: {}", shouldReset);
-    	    return shouldReset;
-    	}
+    	    shouldReset = age >= ageLimit && airDelta >= airLossThreshold;
+        } else {
+    	    shouldReset = age >= ageLimit;
+        }
+        return shouldReset;
     }
 }

@@ -26,10 +26,10 @@ public class ConfigAPI {
 	public static String dumpConfigSettings() {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("=== Global Settings ===\n");
-	    sb.append("Chunk Scan Flagging Modulo: ").append(ConfigAPI.CHUNK_SCAN_FLAGGING_CHANCE_MODULO.get()).append("\n");
-	    sb.append("Skip Scan Below TPS: ").append(ConfigAPI.SKIP_CHUNK_SCAN_BELOW_TPS.get()).append("\n");
-	    sb.append("Ticks Between Chunk Scan Batch: ").append(ConfigAPI.TICKS_BETWEEN_CHUNK_SCAN_BATCH.get()).append("\n");
-	    sb.append("Max Chunk Scans Per Batch: ").append(ConfigAPI.MAX_CHUNK_SCANS_PER_BATCH.get()).append("\n\n");
+	    sb.append("Chunk Scan Flagging Modulo: ").append(getChunkScanFrequency()).append("\n");
+	    sb.append("Skip Scan Below TPS: ").append(getSkipSkipChunkScanBelowTPS()).append("\n");
+	    sb.append("Ticks Between Chunk Scan Batch: ").append(getTicksBetweenChunkScanBatch()).append("\n");
+	    sb.append("Max Chunk Scans Per Batch: ").append(getMaxChunkScansPerBatch()).append("\n\n");
 
 	    sb.append("=== Per-Dimension Settings ===\n");
 
@@ -122,4 +122,8 @@ public class ConfigAPI {
     public static int getChunkScanFrequency() {
     	return CHUNK_SCAN_FLAGGING_CHANCE_MODULO != null ? CHUNK_SCAN_FLAGGING_CHANCE_MODULO.get() : 7;
     }
+
+	public static double getSkipSkipChunkScanBelowTPS() {
+		return SKIP_CHUNK_SCAN_BELOW_TPS != null ? SKIP_CHUNK_SCAN_BELOW_TPS.get() : 15.0;
+	}
 }

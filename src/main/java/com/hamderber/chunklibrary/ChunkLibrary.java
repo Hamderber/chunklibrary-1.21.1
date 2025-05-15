@@ -1,5 +1,7 @@
 package com.hamderber.chunklibrary;
 
+import com.hamderber.chunklibrary.enums.AirEstimate;
+import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -122,17 +124,22 @@ public class ChunkLibrary
                                 
                                 long age = data.getChunkAge(level, chunkPos);
                                 long numRegen = data.getTimesGenerated(level, chunkPos);
-                                
-                                int airEstimate = data.getCurrentAirEstimate(level, chunkPos);
+
+                                int initialAirEstimate = data.getInitialAirEstimate(level, chunkPos);
+                                int currentAirEstimate = data.getCurrentAirEstimate(level, chunkPos);
                                 int airDelta = data.getAirDelta(level, chunkPos);
 
+                                String dimensionID = LevelHelper.getDimensionID(level);
+
+                                boolean shouldResetChunk = data.shouldResetChunk(level, chunkPos, ConfigAPI.getRegenPeriod(dimensionID));
+
                                 context.getSource().sendSuccess(() ->
-                                    Component.literal("Chunk at " + chunkPos.toString() + " in " + LevelHelper.getDimensionID(level) + 
-                                		", since mod installation, is " + age + " days old and has been generated " + numRegen + 
-                                		" time(s). " + (airEstimate == -1 ? 
-                                				"The chunk has not yet been scanned for air. " : 
-                                				"Last scan had " + airEstimate + " near-surface air blocks. " + "Since then, +/- " + airDelta +" air block" + (airDelta == 1 ? "" : "s") + " have changed. ") +            		
-                                		"This chunk " + (data.shouldResetChunk(level, chunkPos, ConfigAPI.FEATURE_REGEN_PERIODS.get(LevelHelper.getDimensionID(level)).get()) ? "is" : "is not") + " eligible to regenerate."),
+                                    Component.literal("Chunk at " + chunkPos + " in " + dimensionID +
+                                		", since mod installation, is " + age + " days old and has been generated " + numRegen +
+                                		" time(s). " + (currentAirEstimate == AirEstimate.DEFAULT.getValue() ?
+                                				"The chunk has not yet been scanned for air. " :
+                                				"Last scan had " + currentAirEstimate + " near-surface air blocks. The chunk was first scanned with " + initialAirEstimate + " air blocks. Since then, +/- " + airDelta +" air block" + (airDelta == 1 ? "" : "s") + " have changed. ") +
+                                		"This chunk " + ( shouldResetChunk ? "is" : "is not") + " eligible to regenerate."),
                                     true
                                 );
 
@@ -160,7 +167,7 @@ public class ChunkLibrary
                 	                long age = data.getChunkAge(level, chunkPos);
 
                 	                context.getSource().sendSuccess(() ->
-                	                    Component.literal("Set chunk age to " + days + " at " + chunkPos.toString() + " in " + 
+                	                    Component.literal("Set chunk age to " + days + " at " + chunkPos + " in " +
                 	                    		LevelHelper.getDimensionID(level) + ". It is now " + beforeAge + " -> " + age + " days old."),
                 	                    true
                                     );
@@ -186,7 +193,7 @@ public class ChunkLibrary
                                 int currentAir = data.getCurrentAirEstimate(level, chunkPos);
 
             	                context.getSource().sendSuccess(() ->
-            	                    Component.literal("Chunk at " + chunkPos.toString() + " in " + LevelHelper.getDimensionID(level) + 
+            	                    Component.literal("Chunk at " + chunkPos + " in " + LevelHelper.getDimensionID(level) +
             	                    		" previously had ~" + airBefore + " relavant air blocks. New estimate ~" + airEstimate + 
             	                    		" (~" + airBefore + " -> ~" + currentAir + ")"),
             	                    true
@@ -261,10 +268,14 @@ public class ChunkLibrary
                     .executes(context -> {
                     	
                     	StringBuilder dimensionIds = new StringBuilder();
-                    	
-                    	for (ServerLevel level : ServerLifecycleHooks.getCurrentServer().getAllLevels()) {
-                    		dimensionIds.append(LevelHelper.getDimensionID(level) + " ");
-                    	}
+
+                        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+                        if (server != null) {
+                            for (ServerLevel level : ServerLifecycleHooks.getCurrentServer().getAllLevels()) {
+                                dimensionIds.append(LevelHelper.getDimensionID(level)).append(" ");
+                            }
+                        }
+
                         context.getSource().sendSuccess(() ->
                             Component.literal(dimensionIds.toString()),
                             true

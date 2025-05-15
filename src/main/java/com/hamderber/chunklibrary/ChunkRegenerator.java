@@ -14,7 +14,7 @@ public class ChunkRegenerator {
     public static void regenerateChunk(String dimensionID, int x, int z) {
         ServerLevel level = LevelHelper.getServerLevel(dimensionID);
         if (level == null) {
-            ChunkLibrary.LOGGER.warn("Failed to find ServerLevel for dimension ID: " + dimensionID);
+            logWarnNullLevel(dimensionID);
             return;
         }
         
@@ -23,5 +23,9 @@ public class ChunkRegenerator {
 
     public static boolean isMarked(ServerLevel level, ChunkPos pos) {
         return WorldRegenData.get().isMarked(level, pos);
+    }
+
+    private static void logWarnNullLevel(String dimensionID) {
+        ChunkLibrary.LOGGER.warn("Failed to find ServerLevel for dimension ID: {}", dimensionID);
     }
 }

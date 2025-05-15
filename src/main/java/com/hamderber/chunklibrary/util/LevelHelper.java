@@ -55,7 +55,7 @@ public class LevelHelper {
 	
 	public static int sampleAirBlocksUnsafe (ServerLevel level, ChunkPos chunkPos, boolean ignoreTPS) {
 	    ChunkAccess chunk = level.getChunk(chunkPos.x, chunkPos.z); // calling getchunk during generation will cause problems
-	    // this has the same behavior but this is unsafe so it is intentionally called when there wont be a chunk access problem
+	    // this has the same behavior but this is unsafe so it is intentionally called when there won't be a chunk access problem
 	    return sampleAirBlocksSafe(level, chunk, ignoreTPS);
 	}
 	
@@ -67,7 +67,7 @@ public class LevelHelper {
 		 * HOURS WASTED TRYING TO OPTIMIZE THIS METHOD:
 		 * 17 (4/18/25)
 		 */
-	    long startTime = System.nanoTime();
+//	    long startTime = System.nanoTime();
 
 //	    ChunkPos chunkPos = chunk.getPos();
 //	    String dimId = LevelHelper.getDimensionID(level);
@@ -92,8 +92,8 @@ public class LevelHelper {
 	        }
 	    }
 
-	    long endTime = System.nanoTime();
-	    long durationMicros = (endTime - startTime) / 1000;
+//	    long endTime = System.nanoTime();
+//	    long durationMicros = (endTime - startTime) / 1000;
 
 //	    ChunkLibrary.LOGGER.debug("AirScan [{} | {}]: dim='{}', scanned Y=({}, {}), Air={}, Time={}µs",
 //	            chunkPos.x, chunkPos.z,
