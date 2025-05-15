@@ -50,6 +50,8 @@ public class ChunkGeneratorMixin {
 	
 	@Inject(method = "applyBiomeDecoration", at = @At("TAIL")) // using ChunkAccess makes block scanning safe
 	private void afterBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager, CallbackInfo ci) {
-		ChunkScanner.queueChunkForScan(level.getLevel(), chunk.getPos());
+		// This is called following generation of a chunk for the first time, so this is where I want to schedule an
+		// immediate chunk scan.
+		ChunkScanner.queueChunkForScanImmediate(level.getLevel(), chunk.getPos());
 	}
 }
